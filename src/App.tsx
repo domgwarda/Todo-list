@@ -1,33 +1,70 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [newTask, setNewTask] = useState<string>('');
+
+  const addTask = () => {
+    if (newTask === '') return;
+    setTasks([...tasks, newTask]);
+    setNewTask('');
+  }
+
+  const upTask = (key:number) => {
+    if ((key<=0) || (key>tasks.length)) {
+      return
+    }
+    setTasks([...tasks.slice(0,key-1), tasks[key], tasks[key-1], ...tasks.slice(key+1, tasks.length)]);
+  }
+
+  const downTask = (key:number) => {
+    if ((key<0) || (key>=tasks.length-1)) {
+      return
+    }
+    setTasks([...tasks.slice(0,key), tasks[key+1], tasks[key], ...tasks.slice(key+2, tasks.length)]);
+  }
+
+  const removeTask = (key:number) => {
+    if ((key<0) || (key>tasks.length-1)) {
+      return
+    }
+    setTasks([...tasks.slice(0,key), ...tasks.slice(key+1, tasks.length)]);
+  }
+
+  const clear = () => {
+    setTasks([]);
+  }
+
+  const sort = () => {
+    setTasks([...tasks].sort((a, b) => a.localeCompare(b)));
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div>
+      <h2>Hello Dominika!</h2>
+    </div>
+    <div>
+      <input type='text' placeholder='new task' value={newTask} onChange={(e) => setNewTask(e.target.value)}/>
+      <button type='submit' onClick={addTask}>+</button>
+    </div>
+    <div>
+      <button type='button' onClick={sort}>sort</button>
+      <button type='button' onClick={clear}>clear</button>
+    </div>
+    <ul>
+    <ul>
+        {tasks.map((task, i) => (
+          <li key={i}>
+            {task}
+            <button type='button' onClick={() => upTask(i)}>&uarr;</button>
+            <button type='button' onClick={() => downTask(i)}>&darr;</button>
+            <button type='button' onClick={() => removeTask(i)}>X</button>
+          </li>
+        ))}
+      </ul>
+    </ul>
     </>
   )
 }
